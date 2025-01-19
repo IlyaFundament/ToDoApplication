@@ -9,6 +9,9 @@ activity = "1.9.3"
 constraintlayout = "2.2.0"
 navigationFragment = "2.6.0"
 navigationUi = "2.6.0"
+room_version = "2.6.1"
+rxandroid_version="3.0.2"
+rxjava_version="3.1.8"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -21,6 +24,12 @@ constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayo
 navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
 navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "navigationUi" }
 
+room = {group = "androidx.room", name = "room-runtime", version.ref = "room_version"}
+room-annotation-processor = {group="androidx.room", name = "room-compiler", version.ref ="room_version"}
+room-rxjava3 = {group = "androidx.room", name = "room-rxjava3", version.ref ="room_version"}
+
+rxandroid = {group = "io.reactivex.rxjava3", name = "rxandroid", version.ref ="rxandroid_version"}
+rxjava = {group = "io.reactivex.rxjava3", name = "rxjava", version.ref ="rxjava_version"}
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 
