@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.ItemTouchHelper;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,7 +29,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     private NoteDatabase noteDatabase;
-    private Handler handler = new Handler(Looper.getMainLooper());
 
 
     @Override
@@ -48,6 +48,13 @@ public class MainActivity extends AppCompatActivity {
         notesAdapter.setOnNoteClickListener(note -> {
         });
         recyclerViewNotes.setAdapter(notesAdapter);
+
+        noteDatabase.notesDao().getNotes().observe(this, new Observer<List<Note>>() {
+            @Override
+            public void onChanged(List<Note> notes) {
+                notesAdapter.setNotes(notes);
+            }
+        });
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(
                 new ItemTouchHelper.SimpleCallback(
@@ -69,13 +76,6 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 noteDatabase.notesDao().remove(note.getId());
-                                handler.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        showNotes();
-                                    }
-                                });
-
                             }
                         });
                         thread.start();
@@ -95,27 +95,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPostResume() {
         super.onPostResume();
-        showNotes();
-    }
-
-
-    private void showNotes() {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                List<Note> notes = noteDatabase.notesDao().getNotes();
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        notesAdapter.setNotes(noteDatabase.notesDao().getNotes());
-                    }
-                });
-
-            }
-        });
-        thread.start();
 
     }
+
 
     private void initViews() {
         recyclerViewNotes = findViewById(R.id.recyclerViewNotes);
