@@ -13,15 +13,13 @@ public abstract class NoteDatabase extends RoomDatabase {
     private static NoteDatabase instance = null;
     private static final String DB_NAME = "notes.db";
 
-    public static NoteDatabase getInstance(Application application){
-        if(instance == null){
+    public static NoteDatabase getInstance(Application application) {
+        if (instance == null) {
             instance = Room.databaseBuilder(
                     application,
                     NoteDatabase.class,
                     DB_NAME
-            )
-                    .allowMainThreadQueries()
-                    .build();
+            ).build();
         }
         return instance;
     }
