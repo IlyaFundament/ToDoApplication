@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
     private NotesAdapter notesAdapter;
 
 
-    private final Database database = Database.getInstanse();
+    private NoteDatabase noteDatabase;
 
 
     @Override
@@ -34,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        noteDatabase =  NoteDatabase.getInstance(getApplication());
         initViews();
         notesAdapter = new NotesAdapter();
         notesAdapter.setOnNoteClickListener(note -> {
@@ -55,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                         int position = viewHolder.getAdapterPosition();
                         Note note = notesAdapter.getNotes().get(position);
-                        database.remove(note.getId());
+                        noteDatabase.notesDao().remove(note.getId());
                         showNotes();
                     }
                 });
@@ -76,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void showNotes() {
-        notesAdapter.setNotes(database.getNotes());
+        notesAdapter.setNotes(noteDatabase.notesDao().getNotes());
     }
 
     private void initViews() {
