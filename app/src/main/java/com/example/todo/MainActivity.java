@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -12,6 +13,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,8 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton addTaskButton;
     private NotesAdapter notesAdapter;
 
-
-    private NoteDatabase noteDatabase;
+    private MainViewModel viewModel;
 
 
     @Override
@@ -41,15 +42,25 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
-        noteDatabase = NoteDatabase.getInstance(getApplication());
+        viewModel = new ViewModelProvider(this).get(MainViewModel.class);
+        viewModel.getCount().observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer count) {
+                Toast.makeText(MainActivity.this,
+                        String.valueOf(count),
+                        Toast.LENGTH_SHORT
+                ).show();
+            }
+        });
         initViews();
         notesAdapter = new NotesAdapter();
         notesAdapter.setOnNoteClickListener(note -> {
+            viewModel.showCount();
+
         });
         recyclerViewNotes.setAdapter(notesAdapter);
 
-        noteDatabase.notesDao().getNotes().observe(this, new Observer<List<Note>>() {
+        viewModel.getNotes().observe(this, new Observer<List<Note>>() {
             @Override
             public void onChanged(List<Note> notes) {
                 notesAdapter.setNotes(notes);
@@ -71,15 +82,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                         int position = viewHolder.getAdapterPosition();
                         Note note = notesAdapter.getNotes().get(position);
-
-                        Thread thread = new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                noteDatabase.notesDao().remove(note.getId());
-                            }
-                        });
-                        thread.start();
-                        noteDatabase.notesDao().remove(note.getId());
+                        viewModel.remove(note);
 
                     }
                 });

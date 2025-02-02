@@ -1,8 +1,6 @@
 package com.example.todo;
 
 import androidx.annotation.NonNull;
-import androidx.room.Entity;
-
 import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
@@ -11,7 +9,7 @@ import java.util.Random;
 
 public class Database {
 
-    private ArrayList<Note> notes = new ArrayList<>();
+    private final ArrayList<Note> notes = new ArrayList<>();
 
     private static Database instance = null;
 
