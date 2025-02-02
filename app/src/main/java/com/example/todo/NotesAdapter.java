@@ -68,11 +68,12 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHol
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(onNoteClickListener == null) {
+                if (onNoteClickListener != null) {
                     onNoteClickListener.onNoteClick(note);
                 }
             }
         });
+
     }
 
     @Override

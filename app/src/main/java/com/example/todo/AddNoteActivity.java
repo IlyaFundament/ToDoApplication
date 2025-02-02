@@ -14,6 +14,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 public class AddNoteActivity extends AppCompatActivity {
 
@@ -23,19 +25,29 @@ public class AddNoteActivity extends AppCompatActivity {
     private RadioButton radioButtonMiddle;
     private Button buttonSave;
 
-    private NoteDatabase noteDatabase;
-    private final Handler handler = new Handler(Looper.getMainLooper());
+    private AddNoteViewModel viewModel;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        noteDatabase = NoteDatabase.getInstance(getApplication());
         setContentView(R.layout.activity_add_note);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+        ViewCompat.setOnApplyWindowInsetsListener(
+                findViewById(R.id.main), (v, insets) ->
+                {
+                    Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+                    v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+                    return insets;
+                });
+        viewModel = new ViewModelProvider(this).get(AddNoteViewModel.class);
+        viewModel.getShouldCloseScreen().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean shouldClose) {
+                if (shouldClose) {
+                    finish();
+                }
+            }
         });
         initViews();
         buttonSave.setOnClickListener(v -> saveNote());
@@ -52,12 +64,8 @@ public class AddNoteActivity extends AppCompatActivity {
         String text = editTextNote.getText().toString().trim();
         int priority = getPriority();
         Note note = new Note(text, priority);
-
-        Thread thread = new Thread(() -> {
-            noteDatabase.notesDao().add(note);
-            handler.post(this::finish);
-        });
-        thread.start();
+        viewModel.saveNote(note);
+        finish();
     }
 
     private int getPriority() {

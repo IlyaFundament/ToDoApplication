@@ -2,9 +2,6 @@ package com.example.todo;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -15,7 +12,6 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
-
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -31,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
 
     private MainViewModel viewModel;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,21 +38,8 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
         viewModel = new ViewModelProvider(this).get(MainViewModel.class);
-        viewModel.getCount().observe(this, new Observer<Integer>() {
-            @Override
-            public void onChanged(Integer count) {
-                Toast.makeText(MainActivity.this,
-                        String.valueOf(count),
-                        Toast.LENGTH_SHORT
-                ).show();
-            }
-        });
         initViews();
         notesAdapter = new NotesAdapter();
-        notesAdapter.setOnNoteClickListener(note -> {
-            viewModel.showCount();
-
-        });
         recyclerViewNotes.setAdapter(notesAdapter);
 
         viewModel.getNotes().observe(this, new Observer<List<Note>>() {
